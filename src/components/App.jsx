@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { GlobalStyle } from './GlobalStyle';
 import { Layout } from './Layout/Layout';
+import { nanoid } from 'nanoid';
 import { Section } from './Section/Section';
 import { ContactForm } from './ContactForm/ContactForm';
 import initialContacts from './contacts.json';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer,toast  } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ContactList } from './ContactList/ContactList';
 import { Header } from './Header/Header';
@@ -26,20 +27,26 @@ export default class App extends Component {
     contacts: initialContacts,
     filter: '',
   };
-
-  addContact = newContact => {
-    this.state.contacts.filter(
-      contact =>
-        contact.name.toLowerCase().trim() ===
-          newContact.name.toLowerCase().trim() ||
-        contact.number.trim() === newContact.number.trim()
-    ).length
-      ? toast.error(`${newContact.name}: is already in contacts`, notifyOptions)
-      : this.setState(prevState => {
-          return {
-            contacts: [newContact, ...prevState.contacts],
-          };
-        });
+  addContact = data => {
+    const { name, number } = data;
+    const newContact = {
+      id: nanoid(),
+      name: name,
+      number: number,
+    };
+    this.setState(({ contacts }) =>
+      contacts.find(
+        contact =>
+          contact.name.toLowerCase().trim() ===
+            newContact.name.toLowerCase().trim() ||
+          contact.number.trim() === newContact.number.trim()
+      )
+        ? toast.error(
+            `${newContact.name}: is already in contacts`,
+            notifyOptions
+          )
+        : { contacts: [newContact, ...contacts] }
+    );
   };
 
   deleteContact = contactId => {
